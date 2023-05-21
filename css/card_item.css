@@ -1,0 +1,25 @@
+.card-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  color: var(--color-tan);
+}
+.card-img-top img {
+  aspect-ratio: 2/2;
+  object-fit: cover;
+  min-height: 270px;
+  overflow: hidden;
+  border-radius: 30px !important;
+}
+.card {
+  background-color: var(--dark-purple-secondary);
+}
+.card-bottom {
+  color: white;
+  background-color: var(--color-dark-gray);
+}
+.card-bottom i {
+  color: black;
+  width: 60px;
+}
