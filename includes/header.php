@@ -1,7 +1,8 @@
 <?php
 session_start();
+include_once('./config.php');
 require('./database/DatabaseHandler.php');
-$db = new DatabaseHandler();
+$db = new DatabaseHandler(db_host, db_name, db_user, db_password);
 $Categories = $db->Categories();
 ?>
 
@@ -21,7 +22,7 @@ $Categories = $db->Categories();
     <link rel="stylesheet" href="./css/owl.theme.default.css">
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/card_item.css">
-    <link rel="shortcut icon" href="./imgs/icon_launcher.png">
+    <link rel="shortcut icon" href="https://github.com/nguynvanky/images/blob/main/icon_launcher.png?raw=true">
     <title>Coffee Shop</title>
 </head>
 
@@ -33,7 +34,7 @@ $Categories = $db->Categories();
             <?php if (isset($_SESSION['admin'])) : ?>
                 <span class="d-flex gap-2"><a href="manage_product.php"> <i>Hi, <?= $_SESSION["log_name"] ?></i></a> / <a href="logout.php">Sign out</a></span>
             <? else : ?>
-                <span class="d-flex gap-2"><a href=""> <i>Hi, <?= $_SESSION["log_name"] ?></i></a> / <a href="logout.php">Sign out</a></span>
+                <span class="d-flex gap-2"><a href="profile.php"> <i>Hi, <?= $_SESSION["log_name"] ?></i></a> / <a href="logout.php">Sign out</a></span>
 
             <? endif ?>
         <?php else : ?>
@@ -71,7 +72,7 @@ $Categories = $db->Categories();
                 </div>
                 <div class="p-3 rounded-circle" id="logo-center">
                     <a class="" href="index.php">
-                        <img style="width:150px; height:150px;" class="rounded-circle" src="././imgs/icon_launcher.png" alt="">
+                        <img style="width:150px; height:150px;" class="rounded-circle" src="https://github.com/nguynvanky/images/blob/main/icon_launcher.png?raw=true" alt="">
                     </a>
                 </div>
 
@@ -87,7 +88,7 @@ $Categories = $db->Categories();
                             <i style="color: var(--color-tan); " class="fa fa-2x fa-cart-shopping position-relative">
                                 <span style="font-size: 13px;" class="position-absolute small px-2 top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
                                     <span class=""><?php
-                                                    if (count($db->GetDetailsCartByUser($_SESSION["log_detail"])) == null) {
+                                                    if ($db->GetDetailsCartByUser($_SESSION["log_detail"]) == null) {
                                                         echo "0";
                                                     } else {
                                                         echo count($db->GetDetailsCartByUser($_SESSION["log_detail"]));
@@ -106,7 +107,7 @@ $Categories = $db->Categories();
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
         <div class="offcanvas-header">
             <div class="d-flex justify-content-center w-100" style="background-color: var(--dark-purple-primary);">
-                <img class="rounded-circle" style="width:150px; height:150px;" src="././imgs/icon_launcher.png" alt="">
+                <img class="rounded-circle" style="width:150px; height:150px;" src="https://github.com/nguynvanky/images/blob/main/icon_launcher.png?raw=true" alt="">
             </div>
             <button type="button" class="btn-close text-reset shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>

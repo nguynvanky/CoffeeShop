@@ -4,9 +4,9 @@ if (isset($_SESSION['admin']) == false) {
     header("Location: index.php");
     exit();
 }
-require('database\DatabaseHandler.php');
-$db = new DatabaseHandler();
-
+include_once('config.php');
+require('database/DatabaseHandler.php');
+$db = new DatabaseHandler(db_host, db_name, db_user, db_password);
 $users = $db->Users();
 ?>
 <!DOCTYPE html>
@@ -20,7 +20,7 @@ $users = $db->Users();
     <link rel="stylesheet" href="./css/bootstrap.css">
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="shortcut icon" href="./imgs/icon_launcher.png">
+    <link rel="shortcut icon" href="https://github.com/nguynvanky/images/blob/main/icon_launcher.png?raw=true">
 
     <title>ADMIN</title>
 </head>

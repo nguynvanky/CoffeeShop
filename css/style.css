@@ -166,10 +166,10 @@ footer {
   background-color: var(--dark-purple-secondary) !important;
 }
 .item-detail-cart {
-  height: 150px;
+  height: 140px;
 }
 .item-detail-cart img {
-  width: 120px !important;
+  width: 110px !important;
   border-radius: 20px;
   object-fit: cover;
   aspect-ratio: 5/3;
@@ -194,6 +194,17 @@ footer {
   color: white;
 }
 #input_address:focus {
+  background-color: #463d46;
+  color: white;
+}
+
+.input_primary {
+  box-sizing: border-box;
+  border: none !important;
+  background-color: #463d46 !important;
+  color: white;
+}
+.input_primary:focus {
   background-color: #463d46;
   color: white;
 }

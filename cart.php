@@ -5,6 +5,15 @@ if (isset($_SESSION['log_detail']) == false) {
     header("Location: index.php");
     exit();
 }
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'vendor/PHPMailer-master/src/Exception.php';
+require 'vendor/PHPMailer-master/src/PHPMailer.php';
+require 'vendor/PHPMailer-master/src/SMTP.php';
+
+
 $id_user = $_SESSION['log_detail'];
 $detailcarts = $db->GetDetailsCartByUser($id_user);
 // update tổng tiền của cart 
@@ -23,8 +32,39 @@ if ($cart != null) {
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'pay') {
         $address = $_GET['address'];
+        $cart = $db->GetCartByUser($id_user);
         $db->Pay($id_user, $address);
+
+        $user = $db->GetUserByID($id_user);
+        $mail = new PHPMailer(true);
+        try {
+            //Server settings
+            $mail->isSMTP();                                            //Send using SMTP
+            $mail->Host       = 'smtp.elasticemail.com';                     //Set the SMTP server to send through
+            $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+            $mail->Username   = 'nguynvanky.work@gmail.com';                     //SMTP username
+            $mail->Password   = '6226568015B4204161B6D88B0B97E90720CE';                               //SMTP password
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+            $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+            //Recipients
+            $mail->setFrom('nguynvanky.work@gmail.com', 'Coffee shop');
+            $mail->addReplyTo($user->email, $user->full_name);
+            $mail->addAddress($user->email, $user->full_name);     //Add a recipient
+
+            //Content
+            $mail->isHTML(true);                                  //Set email format to HTML
+            $mail->Subject = "Thanks for using our service";
+            $mail->Body    = 'Thank you very much for using our services. We will always strive to do our best.<br/>' . '<b>Grand Total Price: ' . $cart->total_price . ' $</b><br/><b>To address: ' . $address . '</b>';
+            $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+            $mail->send();
+            echo 'Message has been sent';
+        } catch (Exception $e) {
+            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        }
         header('Location: cart.php');
+        exit();
     }
 }
 if (isset($_GET['action']) &&  isset($_GET['id'])) {
@@ -60,8 +100,8 @@ if (isset($_GET['action']) &&  isset($_GET['id'])) {
                             <div class="rounded-4 rounded bg-dark-purple-secondary w-100 d-flex item-detail-cart p-3 mt-4">
                                 <img class="img-fluid" src="<?= $product->image ?>" alt="">
                                 <div class="ms-3 d-flex flex-column">
-                                    <h4><?= $product->name ?></h4>
-                                    <h5><?= number_format($product->price, 0, '.', ','); ?> $</h5>
+                                    <h5><?= $product->name ?></h5>
+                                    <h6><?= number_format($product->price, 0, '.', ','); ?> $</h6>
                                 </div>
                                 <div class="ms-auto d-flex align-items-center justify-content-center">
                                     <form action="cart.php" method="get">
@@ -73,17 +113,6 @@ if (isset($_GET['action']) &&  isset($_GET['id'])) {
                                 </div>
                                 <a class="ms-3" href="cart.php?action=delete&id=<?= $detail->id ?>"><i class="fa  fa-close text-danger"></i></a>
                             </div>
-                            <!-- <td class="text-center">
-                                    <form action="cart.php" method="get">
-                                        <input type="text" name="action" value="update" hidden>
-                                        <input type="text" name="id" value="<?= $detail->id ?>" hidden>
-                                        <input class="form-control mx-auto w-50 shadow-none" name="quantity" type="number" value="<?= $detail->quantity ?>" width="5">
-                                        <input type="submit" hidden>
-                                    </form>
-                                </td>
-                                <td>
-                                    <a href="cart.php?action=delete&id=<?= $detail->id ?>"><i class="fa fa-close text-danger"></i></a>
-                                </td> -->
                         <? } ?>
                     </div>
                 </div>

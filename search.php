@@ -19,10 +19,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     <div class="col" id="seamless-replace">
         <div class="row g-5">
             <? foreach ($products as $product) : ?>
-                <div class="col-12 p-2 col-md-6 col-sm-6  col-lg-3">
+                <div class="col-12 p-4 col-md-6 col-sm-6  col-lg-3">
                     <div class="card mx-4 mx-lg-2 rounded rounded-4 pb-3">
                         <div class="card-img-top">
-                            <img class=" img-fluid p-3 pb-1 " style="" src="./imgs/<?= $product->image ?>" alt="">
+                            <img class=" img-fluid p-3 pb-1 " style="" src="<?= $product->image ?>" alt="">
                         </div>
                         <div class="card-body">
                             <h5 class="card-title fw-bold " title="<?= $product->name ?>"><?= $product->name ?></h5>

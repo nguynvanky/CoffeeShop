@@ -5,7 +5,10 @@ if (isset($_SESSION['admin']) == false) {
     exit();
 }
 require('database\DatabaseHandler.php');
-$db = new DatabaseHandler();
+require('config.php');
+
+$db = new DatabaseHandler(db_host, db_name, db_user, db_password);
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = $_POST['id'];
     $name = $_POST['name'];

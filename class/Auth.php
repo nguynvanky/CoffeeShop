@@ -1,12 +1,15 @@
 <?php
 session_start();
 require('./database/DatabaseHandler.php');
+include_once('./config.php');
+
 class Auth
 {
     public static function Login($username, $password)
     {
 
-        $db = new DatabaseHandler();
+        $db = new DatabaseHandler(db_host, db_name, db_user, db_password);
+
         $is_success = $db->getUserLogin($username, $password);
         var_dump($is_success);
         if ($is_success != null) {
@@ -26,7 +29,8 @@ class Auth
     }
     public static function Register($full_name, $phone_number, $email, $username, $_password)
     {
-        $db = new DatabaseHandler();
+        $db = new DatabaseHandler(db_host, db_name, db_user, db_password);
+
 
         $id = $db->Register($full_name, $phone_number, $email, $username, $_password);
         if ($id != -1) {

@@ -7,21 +7,25 @@ require('./class/Product.php');
 
 class DatabaseHandler
 {
-    public function __construct()
+    protected $hostname;
+    protected $dbname;
+    protected $user;
+    protected $password;
+    public function __construct($host, $db, $user, $pass)
     {
+        $this->hostname = $host;
+        $this->dbname = $db;
+        $this->user = $user;
+        $this->password = $pass;
     }
 
     private function getConn()
     {
         try {
-            $hostname = "localhost";
-            $dbname = "coffeshop";
-            $user = "vanky";
-            $password = "vanky";
-            //  $hostname = "sql210.epizy.com";
-            // $dbname = "epiz_34241675_coffeeshop";
-            // $user = "epiz_34241675";
-            // $password = "tIXTKOWDvznB60";
+            $hostname = $this->hostname;
+            $dbname = $this->dbname;
+            $user = $this->user;
+            $password = $this->password;
             $dsn = "mysql:host=$hostname;dbname=$dbname;charset=UTF8";
             return new PDO($dsn, $user, $password);
         } catch (PDOException $ec) {
@@ -31,7 +35,7 @@ class DatabaseHandler
     }
     public function Categories()
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "select * from category";
         $statement =  $connection->prepare($query);
 
@@ -46,7 +50,7 @@ class DatabaseHandler
     }
     public function Products()
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "select * from product";
         $statement =  $connection->prepare($query);
 
@@ -59,9 +63,24 @@ class DatabaseHandler
         }
         return $statement->fetchAll();
     }
+    public function Carts()
+    {
+        $connection = $this->getConn();
+        $query = "select * from cart";
+        $statement =  $connection->prepare($query);
+
+
+        if ($statement->execute()) {
+            $statement->setFetchMode(PDO::FETCH_CLASS, 'Cart');
+        } else {
+            $err = $statement->errorInfo();
+            var_dump($err);
+        }
+        return $statement->fetchAll();
+    }
     public function Users()
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "select * from _user";
         $statement =  $connection->prepare($query);
 
@@ -76,7 +95,7 @@ class DatabaseHandler
     }
     public function ProductsById_Category($id)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "select * from product where id_cate =:id";
         $statement =  $connection->prepare($query);
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
@@ -90,7 +109,7 @@ class DatabaseHandler
     }
     public function SearchProduct($keyword)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = 'SELECT * FROM product WHERE name COLLATE utf8mb4_general_ci LIKE \'' . "%" . $keyword . '%\'';
         $statement =  $connection->prepare($query);
         $statement->bindParam(':keyword', $keyword, PDO::PARAM_STR);
@@ -105,7 +124,7 @@ class DatabaseHandler
     }
     public function ProductsById_Category_WithPagination($id, $initial_page, $limit)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "select * from product where id_cate =:id LIMIT :initial_page, :limit";
         $statement =  $connection->prepare($query);
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
@@ -122,7 +141,7 @@ class DatabaseHandler
 
     public function getNameCategory($id)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "select * from category where id =:id";
         $statement =  $connection->prepare($query);
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
@@ -139,7 +158,7 @@ class DatabaseHandler
     }
     public function AddProduct($name, $price, $desc,  $img, $category)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "INSERT INTO `product`(`name`, `price`, `description`, `id_cate`, `image`) VALUES (:name,:price,:desc,:category,:img)";
         $statement =  $connection->prepare($query);
         $statement->bindParam(':name', $name, PDO::PARAM_STR);
@@ -155,7 +174,7 @@ class DatabaseHandler
     }
     public function UpdateProduct($id, $name, $price, $desc,  $img, $category)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "UPDATE `product` SET `id`=:id,`name`=:name,`price`=:price,`description`=:desc,`id_cate`=:category,`image`=:img WHERE id = :id";
         $statement =  $connection->prepare($query);
         $statement->bindParam(':id', $id, PDO::PARAM_INT);
@@ -172,7 +191,7 @@ class DatabaseHandler
     }
     public function DeleteProduct($id)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "DELETE FROM `product` WHERE id = :id";
         $statement =  $connection->prepare($query);
         $statement->bindParam(':id', $id, PDO::PARAM_INT);
@@ -185,7 +204,7 @@ class DatabaseHandler
     }
     public function Register($full_name, $phone_number, $email,  $username, $_password)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "INSERT INTO _user(full_name, phonenumber, email, role, username, _PASSWORD) VALUES (:full_name,:phone_number,:email,'user',:username,:password)";
         $statement =  $connection->prepare($query);
         $statement->bindParam(':full_name', $full_name, PDO::PARAM_STR);
@@ -202,7 +221,7 @@ class DatabaseHandler
     }
     public function getUserLogin($username, $password)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "SELECT * FROM _user WHERE username =:username";
         $statement =  $connection->prepare($query);
         $statement->bindValue(':username', $username, PDO::PARAM_STR);
@@ -223,7 +242,7 @@ class DatabaseHandler
     }
     public function GetProductByID($id)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "SELECT * FROM product WHERE id =:id";
         $statement =  $connection->prepare($query);
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
@@ -235,7 +254,7 @@ class DatabaseHandler
     }
     public function GetDetailsCartByUser_Ordered($id_user)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "SELECT * FROM cart WHERE id_user =:id_user and _status = 1";
         $statement =  $connection->prepare($query);
         $statement->bindValue(':id_user', $id_user, PDO::PARAM_INT);
@@ -255,7 +274,7 @@ class DatabaseHandler
     }
     public function GetDetailsCartByIdCart($id_cart)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "SELECT * FROM detail_cart WHERE id_cart =:id_cart";
         $statement =  $connection->prepare($query);
         $statement->bindValue(':id_cart', $id_cart, PDO::PARAM_INT);
@@ -266,7 +285,7 @@ class DatabaseHandler
     }
     public function GetDetailsCartByUser($id_user)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "SELECT * FROM cart WHERE id_user =:id_user and _status = 0";
         $statement =  $connection->prepare($query);
         $statement->bindValue(':id_user', $id_user, PDO::PARAM_INT);
@@ -286,7 +305,7 @@ class DatabaseHandler
     }
     public function UpdateCart($id, $total)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "update cart set total_price=:total where id=:id";
         $statement =  $connection->prepare($query);
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
@@ -297,7 +316,7 @@ class DatabaseHandler
     }
     public function Pay($id_user, $address)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "update cart set _status=1, address=:address where id_user=:id_user and _status=0";
         $statement =  $connection->prepare($query);
         $statement->bindValue(':id_user', $id_user, PDO::PARAM_INT);
@@ -306,9 +325,29 @@ class DatabaseHandler
             $connection->lastInsertId();
         }
     }
+    public function UpdateUser($user, $flag)
+    {
+        $connection = $this->getConn();
+        $query = "update _user set full_name=:full_name, phonenumber=:phonenumber, email =:email where id=:id";
+        if ($flag == 1) { // update password
+            $query = "update _user set full_name=:full_name, phonenumber=:phonenumber, email =:email, _password=:password where id=:id";
+        }
+        $statement =  $connection->prepare($query);
+        $statement->bindValue(':id', $user->id, PDO::PARAM_INT);
+        $statement->bindValue(':full_name', $user->full_name, PDO::PARAM_STR);
+        $statement->bindValue(':phonenumber', $user->phonenumber, PDO::PARAM_STR);
+        $statement->bindValue(':email', $user->email, PDO::PARAM_STR);
+        if ($flag == 1) {
+            $hash_pass = password_hash($user->_password, PASSWORD_BCRYPT);
+            $statement->bindValue(':password', $hash_pass, PDO::PARAM_STR);
+        }
+        if ($statement->execute()) {
+            $connection->lastInsertId();
+        }
+    }
     public function GetUserByID($id)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "SELECT * FROM _user WHERE id =:id";
         $statement =  $connection->prepare($query);
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
@@ -320,7 +359,7 @@ class DatabaseHandler
     }
     public function GetCartByUser($id_user)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "SELECT * FROM cart WHERE id_user =:id_user and _status = 0";
 
         $statement =  $connection->prepare($query);
@@ -334,7 +373,7 @@ class DatabaseHandler
     }
     public function GetCartByIdCart($id_cart)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "SELECT * FROM cart WHERE id =:id";
         $statement =  $connection->prepare($query);
         $statement->bindValue(':id', $id_cart, PDO::PARAM_INT);
@@ -347,7 +386,7 @@ class DatabaseHandler
     }
     public function GetCartOrderedByUser($id_user)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "SELECT * FROM cart WHERE id_user =:id_user and _status = 1";
 
         $statement =  $connection->prepare($query);
@@ -362,7 +401,7 @@ class DatabaseHandler
     }
     public function DeleteCartDetail($id)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "delete from detail_cart where id=:id ";
         $statement =  $connection->prepare($query);
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
@@ -374,7 +413,7 @@ class DatabaseHandler
     }
     public function UpdateCartDetail($id, $quantity)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "update detail_cart set quantity=:quantity where id=:id";
         $statement =  $connection->prepare($query);
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
@@ -385,10 +424,10 @@ class DatabaseHandler
     }
     public function Order($id_user, $id_product)
     {
-        $connection = DatabaseHandler::getConn();
+        $connection = $this->getConn();
         $query = "SELECT * FROM cart WHERE id_user =:id_user and _status = 0";
         $statement =  $connection->prepare($query);
-        $product =  DatabaseHandler::GetProductByID($id_product);
+        $product =  $this->GetProductByID($id_product);
         $statement->bindValue(':id_user', $id_user, PDO::PARAM_INT);
         if ($statement->execute()) {
             $statement->setFetchMode(PDO::FETCH_CLASS, 'Cart');
